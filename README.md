@@ -1,53 +1,105 @@
 # VNR ERP API
 
-API REST de gestion des clients pour un ERP.
+API REST de gestion des clients pour l'ERP VNR.
 
-## Stack
+## Technologies utilisées
 
 - Node.js
-- Express
+- Express.js
 - TypeScript
 - PostgreSQL
 - JWT
+- bcrypt
+- Zod
+- Swagger / OpenAPI
+
+---
+
+## Architecture
+
+```
+src/
+├── config
+│   └── database.ts
+├── controllers
+│   ├── auth.controller.ts
+│   └── customer.controller.ts
+├── middlewares
+│   └── auth.middleware.ts
+├── routes
+│   ├── auth.routes.ts
+│   └── customer.routes.ts
+├── services
+│   └── auth.service.ts
+└── validators
+		└── customer.validator.ts
+```
+
+---
 
 ## Installation
 
-Installer les dépendances :
+1. Cloner le projet
 
+```bash
+git clone <repository>
+cd vnr-erp-api
+```
+
+2. Installer les dépendances
+
+```bash
 npm install
+```
 
-Créer une base PostgreSQL :
-vnr_erp
+3. Configuration
 
-Configurer le fichier .env :
+Créer un fichier `.env` à la racine et ajouter les variables d'environnement nécessaires :
 
-DB_HOST=
-DB_PORT=
-DB_USER=
-DB_PASSWORD=
-DB_NAME=
-JWT_SECRET=
+```
+PORT=3000
+DATABASE_URL=postgresql://user:password@localhost:5432/vnr_erp
+JWT_SECRET=secret_key
+```
 
-Lancer le projet :
+4. Lancer le projet (mode développement)
 
+```bash
 npm run dev
+```
 
+L'API sera disponible sur : http://localhost:3000
 
-## Endpoints
+La documentation Swagger est accessible à : http://localhost:3000/api-docs
 
-### Authentification
+---
 
-POST /api/auth/login
+## Authentification
 
+- Inscription : POST /api/auth/register
+- Connexion : POST /api/auth/login
 
-### Clients
+La connexion retourne un JWT à utiliser pour les routes protégées via l'en-tête :
 
-GET /api/customers
+Authorization: Bearer <TOKEN>
 
-POST /api/customers
+---
 
-GET /api/customers/:id
+## Gestion des clients
 
-PUT /api/customers/:id
+- Créer un client : POST /api/customers
+- Lister les clients : GET /api/customers
+	- Recherche et pagination : GET /api/customers?search=test&page=1&limit=10
+- Obtenir un client par ID : GET /api/customers/:id
+- Modifier : PUT /api/customers/:id
+- Supprimer : DELETE /api/customers/:id
 
-DELETE /api/customers/:id
+---
+
+## Sécurité
+
+- Mots de passe hachés avec bcrypt
+- Authentification par JWT
+- Routes protégées par un middleware d'authentification
+- Requêtes SQL paramétrées pour prévenir les injections SQL
+- Validation des données entrantes (Zod)
