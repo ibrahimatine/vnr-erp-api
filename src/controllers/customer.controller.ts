@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { pool } from "../config/database";
-
+import { customerSchema } from "../validators/customer.validator";
 
 export async function getCustomers(
     req: Request,
@@ -30,10 +30,16 @@ LIMIT $2 OFFSET $3
 }
 
 
-export async function createCustomer(
-    req: Request,
-    res: Response
-){
+export async function createCustomer(req: Request, res: Response){
+
+    const validation = customerSchema.safeParse(req.body);
+
+    if(!validation.success){
+        return res.status(400).json({
+            error: validation.error
+        });
+    }
+
 
     const {name, phone, email} = req.body;
 
