@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {pool} from "../config/database";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
+import { createUser } from "../services/auth.service";
 
 export async function login(
     req:Request,
@@ -57,4 +57,36 @@ export async function login(
     res.json({
         token
     });
+}
+
+export async function register(
+    req: Request,
+    res: Response
+){
+
+    const { email, password } = req.body;
+
+
+    try {
+
+        const user = await createUser(
+            email,
+            password
+        );
+
+
+        res.status(201).json({
+            message: "Utilisateur créé",
+            user
+        });
+
+
+    } catch(error:any){
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+
 }
