@@ -30,31 +30,45 @@ LIMIT $2 OFFSET $3
 }
 
 
-export async function createCustomer(req: Request, res: Response){
-
+export async function createCustomer(req: Request, res: Response) {
     const validation = customerSchema.safeParse(req.body);
 
-    if(!validation.success){
+    if (!validation.success) {
         return res.status(400).json({
-            error: validation.error
+            message: "Données invalides",
+            errors: validation.error.flatten()
         });
     }
 
+    const { name, phone, email } = validation.data;
 
-    const {name, phone, email} = req.body;
+    try {
+        const result = await pool.query(
+            `
+            INSERT INTO customers(name, phone, email)
+            VALUES($1,$2,$3)
+            RETURNING *
+            `,
+            [name, phone, email]
+        );
 
+        return res.status(201).json(result.rows[0]);
 
-    const result = await pool.query(
-        `
-        INSERT INTO customers(name, phone, email)
-        VALUES($1,$2,$3)
-        RETURNING *
-        `,
-        [name, phone, email]
-    );
+    } catch (error: any) {
 
+        // Violation d'une contrainte UNIQUE
+        if (error.code === "23505") {
+            return res.status(400).json({
+                message: "Ce numéro de téléphone existe déjà."
+            });
+        }
 
-    res.status(201).json(result.rows[0]);
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Erreur interne du serveur."
+        });
+    }
 }
 
 export async function getCustomerById(
