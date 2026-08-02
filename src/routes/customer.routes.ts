@@ -38,6 +38,31 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Liste des clients
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: Cheikh Fall
+ *                   phone:
+ *                     type: string
+ *                     example: "770000001"
+ *                   email:
+ *                     type: string
+ *                     example: cheikh@vnr.com
+ *                   created_at:
+ *                     type: string
+ *                     format: date-time
+ *                   updated_at:
+ *                     type: string
+ *                     format: date-time
  */
 router.get("/", authMiddleware, getCustomers);
 
