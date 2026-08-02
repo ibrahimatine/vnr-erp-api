@@ -10,6 +10,35 @@ import {
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/customers:
+ *   get:
+ *     summary: Liste des clients avec recherche et pagination
+ *     tags:
+ *       - Customers
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Recherche par nom ou téléphone
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *     responses:
+ *       200:
+ *         description: Liste des clients
+ */
 router.get("/", authMiddleware, getCustomers);
 
 /**
@@ -45,37 +74,86 @@ router.post("/", authMiddleware, createCustomer);
 
 /**
  * @swagger
- * /api/customers:
+ * /api/customers/{id}:
  *   get:
- *     summary: Liste des clients avec recherche et pagination
+ *     summary: Récupérer un client par son ID
  *     tags:
  *       - Customers
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Recherche par nom ou téléphone
- *       - in: query
- *         name: page
+ *       - in: path
+ *         name: id
+ *         required: true
  *         schema:
  *           type: integer
- *           example: 1
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           example: 10
  *     responses:
  *       200:
- *         description: Liste des clients
+ *         description: Client trouvé
+ *       404:
+ *         description: Client introuvable
  */
 router.get("/:id", authMiddleware, getCustomerById);
 
+/**
+ * @swagger
+ * /api/customers/{id}:
+ *   put:
+ *     summary: Modifier un client
+ *     tags:
+ *       - Customers
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Identifiant du client
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Client modifié
+ *       404:
+ *         description: Client introuvable
+ */
 router.put("/:id", authMiddleware, updateCustomer);
 
+/**
+ * @swagger
+ * /api/customers/{id}:
+ *   delete:
+ *     summary: Supprimer un client
+ *     tags:
+ *       - Customers
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Identifiant du client
+ *     responses:
+ *       200:
+ *         description: Client supprimé
+ *       404:
+ *         description: Client introuvable
+ */
 router.delete("/:id", authMiddleware, deleteCustomer);
 
 /**
